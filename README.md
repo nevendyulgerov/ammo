@@ -52,6 +52,7 @@ app
 
 ### API Breakdown
 
+#### onDomReady
 ```javascript
 // onDomReady
 // @param {function} callback {required}
@@ -67,6 +68,7 @@ ammo.onDomReady(() => {
 
 ```
 
+#### delegateEvent
 ```javascript
 // delegateEvent
 // @param {string} event {required}
