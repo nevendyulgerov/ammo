@@ -1,11 +1,11 @@
 # AmmoJS
 ## General purpose utility belt for building front-end applications with JavaScript
 
-Ammo is a light-weight JavaScript utility belt for building lean front-end applications. Ammo offers core functionality for DOM interactions, data manipulation, template rendering, UI state management, event buffering, promises, polling. This library can replace heavy-in-size libraries like jQuery, as it offers identical helpers without the size overhead.
+Ammo is a light-weight utility belt for building lean front-end applications. Ammo offers core functionality for DOM interactions, data manipulation, template rendering, UI state management, event buffering, promises, polling. This library can replace heavy-in-size libraries like jQuery, as it offers identical helpers without the size overhead.
 
 Ammo is built on top of the ESMAScript 2015 standard. ES5 version of the library is available in this repo.
 
-Ammo is built for people that want a light-weight library for building front-end applications fast. This library has zero dependencies. Ammo utilizes native JS methods. By following this convention ammo can stay very lean and fast.
+Ammo is built for people that want a light-weight library for building front-end applications fast. This library has zero dependencies and utilizes native JS methods.
 
 Ammo encourages using native code to achieve your desired functionality rather than relying on multiple abstraction libraries.
 
