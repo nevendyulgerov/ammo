@@ -283,6 +283,7 @@ let users = [{
 let filtered = ammo.filter(users, 'eyeColor', 'blue');
 
 // filtered contains:
+/*
 [{
     index: 0,
     item: {
@@ -296,6 +297,7 @@ let filtered = ammo.filter(users, 'eyeColor', 'blue');
         eyeColor: 'blue'
     }
 }];
+*/
 ```
 
 #### isObj()
