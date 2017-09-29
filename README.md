@@ -5,7 +5,7 @@ Ammo is a light-weight JavaScript utility belt for building lean front-end appli
 
 Ammo is built on top of the ESMAScript 2015 standard. Safe transpiling is possible to older standards like ES5.
 
-Ammo is 30KB in size. Minified version is 8KB. GZipped version is ~3KB. This small package exposes the following public API:
+Ammo is 30KB in size. About 1000 lines of code. Minified version is 8KB. GZipped version is ~3KB. This small package exposes the following public API:
 
 ```javascript
 onDomReady,
