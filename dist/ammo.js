@@ -54,13 +54,13 @@
 
         /**
          * Get Closest
+         * @param parentSelector
          * @param selector
-         * @param className
          * @param context
          * @returns {*}
          */
-        let getClosest = (className, selector, context) => {
-            return contx(context).querySelectorAll(className).closest(selector);
+        let getClosest = (parentSelector, selector, context) => {
+            return contx(context).querySelectorAll(parentSelector).closest(selector);
         };
 
 
