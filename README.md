@@ -54,12 +54,10 @@ app
 
 #### onDomReady()
 ```javascript
-// onDomReady
-// @param {function} callback {required}
-// An alternative to $(document).ready()
-
-// Signature: 
-// ammo.onDomReady(callback)
+/**
+ * On DOM Ready
+ * @param callback
+ */
 
 // Usage
 ammo.onDomReady(() => {
@@ -70,14 +68,13 @@ ammo.onDomReady(() => {
 
 #### delegateEvent()
 ```javascript
-// delegateEvent
-// @param {string} event {required}
-// @param {string} className {required}
-// @param {function} callback {required}
-// @param {domElement} context {optional}
-
-// Signature
-// ammo.delegateEvent(event, className, callback, context)
+/**
+ * Delegate Event
+ * @param {string} event {required}
+ * @param {string} className {required}
+ * @param {function} callback {required}
+ * @param {domElement} context {optional}
+ */
 
 // Usage
 ammo.delegateEvent('click', '.my-selector', (e) => {
