@@ -261,7 +261,7 @@ let selectedItems = ammo.filterClass('selected', domItems);
  * @param {string} key
  * @param {mixed} value
  * @returns {Array}
- * Filters a collection by key-value comparison
+ * Filters a collection by key-value comparison and returns a collection containing entries with signature {item: originalItemContents, index: originalItemIndex in the initial collection}. Useful for extracting data and cleaning the initial collection from extracted items.
  */
 
 // usage
@@ -276,6 +276,21 @@ let users = [{
     eyeColor: 'blue'
 }];
 let filtered = ammo.filter(users, 'eyeColor', 'blue');
+
+// filtered contains:
+[{
+    index: 0,
+    item: {
+        name: 'John',
+        eyeColor: 'blue'
+    }
+}, {
+    index: 2,
+    item: {
+        name: 'Andrew',
+        eyeColor: 'blue'
+    }
+}];
 ```
 
 #### isObj()
