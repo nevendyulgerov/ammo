@@ -261,7 +261,12 @@ let selectedItems = ammo.filterClass('selected', domItems);
  * @param {string} key
  * @param {mixed} value
  * @returns {Array}
- * Filters a collection by key-value comparison and returns a collection containing entries with signature {item: originalItemContents, index: originalItemIndex in the initial collection}. Useful for extracting data and cleaning the initial collection from extracted items.
+ * Filters a collection by key-value comparison and returns a collection
+ * containing entries with signature: {
+ *     item: originalItemContents,
+ *     index: originalItemIndex in the initial collection
+ * }
+ * Useful for extracting data and cleaning the initial collection from extracted items.
  */
 
 // usage
