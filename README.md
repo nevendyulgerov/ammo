@@ -77,7 +77,7 @@ ammo.onDomReady(() => {
  * @param {string} event {required}
  * @param {string} className {required}
  * @param {function} callback {required}
- * @param {domElement} context {optional}
+ * @param {object/DomElement} context {optional}
  */
 
 // usage
@@ -92,8 +92,8 @@ ammo.delegateEvent('click', '.my-selector', (e) => {
  * Get Closest
  * @param {string} selector {required}
  * @param {string} targetSelector {required}
- * @param {domElement} context {optional}
- * @returns {Array}
+ * @param {object/DomElement} context {optional}
+ * @returns {Array/NodeList}
  */
 
 // usage
@@ -105,8 +105,8 @@ let domInnerBox = ammo.getClosest('.inner-box', '.outer-box');
 /**
  * Get Class
  * @param {string} className {required}
- * @param {string} context {optional}
- * @returns {Array}
+ * @param {object/DomElement} context {optional}
+ * @returns {Array/NodeList}
  */
 
  // usage
@@ -119,8 +119,8 @@ let domInnerBox = ammo.getClosest('.inner-box', '.outer-box');
 /**
  * Get Tag
  * @param {string} tagName {required}
- * @param {string} context {optional}
- * @returns {Array}
+ * @param {object/DomElement} context {optional}
+ * @returns {Array/NodeList}
  */
 
 // usage
@@ -132,8 +132,8 @@ let domInputs = ammo.getTag('input');
 /**
  * Get Id
  * @param {string} idName {required}
- * @param {string} context {optional}
- * @returns {Element}
+ * @param {object/DomElement} context {optional}
+ * @returns {DomElement}
  */
 
 // usage
@@ -145,8 +145,8 @@ let domUserJohn = ammo.getId('#user-john');
 /**
  * Get Element
  * @param {string} selector {required}
- * @param {string} context {optional}
- * @returns {Array}
+ * @param {DomElement} context {optional}
+ * @returns {Array/NodeList}
  */
 
 // usage
@@ -158,11 +158,171 @@ let domItems = ammo.getEl('.item');
 /**
  * Filter Class
  * @param {string} selector {required}
- * @param {NodeList} els {required}
- * @returns {Array}
+ * @param {Array/NodeList} els {required}
+ * @returns {Array/NodeList}
  */
 
 // usage
 let domItems = ammo.getClass('item', document.body);)
 let selectedItems = ammo.filterClass('selected', domItems);
 ```
+
+#### append()
+```javascript
+/**
+ * Append
+ * @param {string} html {required}
+ * @param {DomElement} context {required}
+ * @returns {*}
+ * Appends a stringified html content after the closing tag of a DOM element
+ */
+
+ // usage
+ ammo.append(`<span>Appended after the element</span>`, document.body);
+```
+
+#### appendIn()
+```javascript
+/**
+ * Append
+ * @param {string} html {required}
+ * @param {DomElement} context {required}
+ * @returns {*}
+ * Appends a stringified html content before the closing tag of a DOM element
+ */
+
+ // usage
+ ammo.appendIn(`<span>Appended before the closing tag of the element</span>`, document.body);
+```
+
+#### prepend()
+```javascript
+/**
+ * Prepend
+ * @param {string} html {required}
+ * @param {DomElement} context {required}
+ * @returns {*}
+ * Appends a stringified html content after the opening tag of a DOM element
+ */
+
+ // usage
+ ammo.prepend(`<span>Prepended after the opening tag of the element</span>`, document.body);
+```
+
+#### prependIn()
+```javascript
+/**
+ * Prepend In
+ * @param {string} html {required}
+ * @param {DomElement} context {required}
+ * @returns {*}
+ * Appends a stringified html content before the opening tag of a DOM element
+ */
+
+ // usage
+ ammo.appendIn(`<span>Prepended before the opening tag of the element</span>`, document.body);
+```
+
+#### remove()
+```javascript
+/**
+ * Remove
+ * @param {string} selector {required}
+ * @param {object/DomElement} context {optional}
+ * @returns {*}
+ * Removes a DOM element
+ */
+
+ // usage
+ ammo.remove('for-removal', document.body);
+```
+
+#### each()
+```javascript
+/**
+ * Each
+ * @param {Array/NodeList} elements
+ * @param {function} callback
+ * Iterates over a collection of DOM elements
+ */
+
+ // usage
+ let domItems = ammo.getClass('item', document.body);
+ ammo.each(domItems, (item, index) => {
+    ammo.remove('item-header', item);
+ });
+```
+
+#### filter()
+```javascript
+/**
+ * Filter
+ * @param {Array} items
+ * @param {string} key
+ * @param {mixed} value
+ * @returns {Array}
+ * Filters a collection by key-value comparison
+ */
+
+// usage
+let users = [{
+    name: 'John',
+    eyeColor: 'blue'
+}, {
+    name: 'Jane',
+    eyeColor: 'green'
+}, {
+    name: 'Andrew',
+    eyeColor: 'blue'
+}];
+let filtered = ammo.filter(users, 'eyeColor', 'blue');
+```
+
+#### isObj()
+```javascript
+/**
+ * Is Object
+ * @param {mixed} val
+ * @returns {boolean}
+ */
+
+// usage
+let user = {name: 'John'};
+if ( ammo.isObj(user) ) {
+    console.log('user is object');
+}
+```
+
+#### isNull()
+```javascript
+/**
+ * Is Null
+ * @param {mixed} val
+ * @returns {boolean}
+ */
+
+// usage
+let user = null;
+if ( ammo.isNull(user) ) {
+    console.log('user is null');
+}
+```
+
+
+#### isNum()
+```javascript
+/**
+ * Is Number
+ * @param {mixed} val
+ * @returns {boolean}
+ */
+
+// usage
+let user = 123;
+if ( ammo.isNum(user) ) {
+    console.log('user is number');
+}
+```
+
+
+
