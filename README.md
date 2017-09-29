@@ -63,7 +63,7 @@ app
 
 // Usage
 ammo.onDomReady(() => {
-	// Safe callback on DOM ready event
+    console.log('DOM ready');
 });
 
 ```
@@ -80,7 +80,7 @@ ammo.onDomReady(() => {
 // ammo.delegateEvent(event, className, callback, context)
 
 // Usage
-ammo.delegateEvent('click', '.my-selector', () => {
-	// handle delegated event
+ammo.delegateEvent('click', '.my-selector', (e) => {
+    console.log(`event delegated to ${e.target}`);
 }, document.body);
 ```
