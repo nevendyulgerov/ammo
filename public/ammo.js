@@ -37,6 +37,41 @@
 
 
         /**
+         * Public
+         * On Hover
+         * @param domEls
+         * @param onIn
+         * @param onOut
+         */
+        let onHover = (domEls, onIn, onOut) => {
+            let lastHovered;
+            each(domEls, (el) => {
+                el.addEventListener('mouseenter', (e) => {
+                    lastHovered = e.target;
+                    onIn(e);
+                });
+                el.addEventListener('mouseout', (e) => {
+                    onOut(e, lastHovered);
+                });
+            });
+        };
+
+
+        /**
+         * Public
+         * On Event
+         * @param event
+         * @param domEls
+         * @param callback
+         */
+        let onEvent = (event, domEls, callback) => {
+            each(domEls, (el) => {
+                el.addEventListener(event, callback);
+            });
+        };
+
+
+        /**
          * Delegate Event
          * @param event
          * @param className
@@ -78,6 +113,18 @@
 
         /**
          * Public
+         * Has Class
+         * @param className
+         * @param domEl
+         * @returns {boolean}
+         */
+        let hasClass = (className, domEl) => {
+            return domEl.classList.contains(className);
+        };
+
+
+        /**
+         * Public
          * Get Tag
          * @param tagName
          * @param context
@@ -89,25 +136,25 @@
 
 
         /**
-         * Public
-         * Get Id
-         * @param idName
+         * Get Element
+         * @param selector
          * @param context
-         * @returns {Element}
+         * @returns {Node}
          */
-        let getId = (idName, context) => {
-            return contx(context).getElementById(idName);
+        let getEl = (selector, context) => {
+            return contx(context).querySelector(selector);
         };
 
 
         /**
-         * Get Element
+         * Public
+         * Is Hovered
          * @param selector
-         * @param context
-         * @returns {NodeList}
+         * @returns {boolean}
          */
-        let getEl = (selector, context) => {
-            return contx(context).querySelectorAll(selector);
+        let isHovered = (selector) => {
+            let domEl = getEl(selector);
+            return domEl.parentNode.querySelector(':hover') === domEl;
         };
 
 
@@ -188,8 +235,18 @@
          * @returns {*}
          */
         let remove = (selector, context) => {
-            let domEl = getEl(selector);
-            (context || domEl.parentNode).removeChild(domEl);
+            let domEl = getEl(selector)[0];
+            domEl.parentNode.removeChild(domEls);
+            return base.ammo;
+        };
+
+
+        /**
+         * Remove El
+         * @param domEl
+         */
+        let removeEl = (domEl) => {
+            domEl.parentNode.removeChild(domEl);
             return base.ammo;
         };
 
@@ -204,6 +261,7 @@
             Object.keys(elements).forEach((k, i) => {
                 callback(elements[k], i);
             });
+            return base.ammo;
         };
 
 
@@ -223,6 +281,23 @@
                         index,
                         item
                     });
+                }
+            });
+            return filtered;
+        };
+
+
+        /**
+         * Filter Elements
+         * @param domEls
+         * @param domEl
+         * @returns {Array}
+         */
+        let filterEls = (domEls, domEl) => {
+            let filtered = [];
+            each(domEls, (el) => {
+                if ( el !== domEl ) {
+                    filtered.push(el);
                 }
             });
             return filtered;
@@ -361,6 +436,19 @@
          */
         let getKeys = function(obj) {
             return Object.keys(obj);
+        };
+
+
+        /**
+         * Public
+         * Each Key
+         * @param obj
+         * @param callback
+         */
+        let eachKey = (obj, callback) => {
+            Object.keys(obj).forEach((k, i) => {
+                callback(k, obj[k], i);
+            });
         };
 
 
@@ -627,7 +715,7 @@
                     }
                 },
                 update(id, name, value) {
-                    let context = contx().querySelectorAll(`[${dataAttr.id}="${identifier}"][${dataAttr.idValue}="${id}"]`)[0];
+                    let context = contx().querySelector(`[${dataAttr.id}="${identifier}"][${dataAttr.idValue}="${id}"]`);
                     context.querySelectorAll(`[${dataAttr.observer}="${name}"]`)[0].textContent = value;
                 },
                 getId(item) {
@@ -662,14 +750,15 @@
                 let params = '';
                 let dataKeys = getKeys(options.data);
                 dataKeys.forEach((k) => {
-                    params += `${k}=${encodeURIComponent(options.data[k])}`;
+                    params += `${k}=${(options.data[k])}`;
                 });
                 xhr.send(params);
+                console.log(params);
             } else {
                 xhr.send();
             }
-        };
 
+        };
 
         let store = function(key) {
             let storage;
@@ -695,6 +784,12 @@
             };
             storage = storageTemplates.localStorage;
 
+            let decodeData = function(data) {
+                return JSON.parse(data);
+            };
+            let encodeData = function(data) {
+                return JSON.stringify(data);
+            };
             let getData = function(key) {
                 return decodeData(storage.getStorageItem(key));
             };
@@ -704,25 +799,8 @@
             let removeData = function(key) {
                 storage.removeStorageItem(key);
             };
-            let decodeData = function(data) {
-                return JSON.parse(data);
-            };
-            let encodeData = function(data) {
-                return JSON.stringify(data);
-            };
 
             return {
-                setTemplate: function(template, storageApi) {
-                    if ( typeof template !== "string" ) {
-                        return new Error("[Storage] Invalid template name. Provide a name{string}.");
-                    }
-                    if ( typeof storageApi !== "object" || typeof storageApi.setStorageItem !== "function" || typeof storageApi.getStorageItem !== "function" || typeof storageApi.removeStorageItem !== "function" ) {
-                        return new Error("[Storage] Invalid storage API. Provide an API, containing getStorageItem{function}, setStorageItem{function}, removeStorageItem{function}.");
-                    }
-                    storageTemplates[template] = storageApi;
-                    storage = storageApi;
-                    return this;
-                },
                 getData: function() {
                     let data = getData(key);
                     return data !== null ? getData(key) : undefined;
@@ -796,8 +874,8 @@
             };
 
             return {
-                chain: chain,
-                execute: execute
+                chain,
+                execute
             };
         };
 
@@ -830,10 +908,10 @@
                 "app": ["events", "actions", "common", "modules", "core"]
             };
 
-            let factory = function() {
-                let augment = function(nodeFamily) {
+            const factory = function() {
+                const augment = function(nodeFamily) {
                     let nodes = app.nodes;
-                    let families = !Array.isArray(nodeFamily) ? [""+nodeFamily] : nodeFamily;
+                    const families = !Array.isArray(nodeFamily) ? [""+nodeFamily] : nodeFamily;
                     families.map(function (nf) {
                         if ( ! nodes.hasOwnProperty(nf) ) {
                             nodes[nf] = {};
@@ -841,26 +919,30 @@
                     });
                     return this;
                 };
-                let addSchema = function(schemaName, schema) {
+
+                const addSchema = function(schemaName, schema) {
                     if ( ! schemas.hasOwnProperty(schemaName) && Array.isArray(schema) ) {
                         schemas[schemaName] = schema;
                     }
                     return this;
                 };
-                let schema = function(schema) {
+
+                const schema = function(schema) {
                     if ( schemas.hasOwnProperty(schema) ) {
                         augment(schemas[schema]);
                     }
                     return this;
                 };
-                let addNode = function(nodeFamily, nodeName, func) {
+
+                const addNode = function(nodeFamily, nodeName, func) {
                     let nodes = app.nodes;
                     if ( nodes.hasOwnProperty(nodeFamily) && ! nodes[nodeFamily].hasOwnProperty(nodeName) && typeof func === "function" ) {
                         nodes[nodeFamily][nodeName] = func;
                     }
                     return this;
                 };
-                let getNode = function(nodeFamily, nodeName) {
+
+                const getNode = function(nodeFamily, nodeName) {
                     let nodes = app.nodes;
                     if ( nodes.hasOwnProperty(nodeFamily) && nodes[nodeFamily].hasOwnProperty(nodeName) && typeof nodes[nodeFamily][nodeName] === "function" ) {
                         return nodes[nodeFamily][nodeName];
@@ -868,19 +950,22 @@
                         return false;
                     }
                 };
-                let callNode = function(nodeFamily, nodeName, params) {
-                    let nodeParams = typeof params !== "undefined" ? params : {};
+
+                const callNode = function(nodeFamily, nodeName, params) {
+                    const nodeParams = typeof params !== "undefined" ? params : {};
                     let node = getNode(nodeFamily, nodeName);
                     if ( node ) {
                         node(nodeParams);
                     }
                     return this;
                 };
-                let getNodes = function(nodeFamily) {
+
+                const getNodes = function(nodeFamily) {
                     return nodeFamily && app.nodes.hasOwnProperty(nodeFamily) ? app.nodes[nodeFamily] : app.nodes;
                 };
-                let configure = function(nodeFamily) {
-                    let nodes = app.nodes;
+
+                const configure = function(nodeFamily) {
+                    const nodes = app.nodes;
                     if ( nodes.hasOwnProperty(nodeFamily) ) {
                         return {
                             node: function(nodeName, func) {
@@ -892,10 +977,12 @@
                     }
                     return false;
                 };
-                let nodeExists = function(nodeFamily, nodeName) {
+
+                const nodeExists = function(nodeFamily, nodeName) {
                     return typeof getNode(nodeFamily, nodeName) === "function";
                 };
-                let getConfig = function(name) {
+
+                const getConfig = function(name) {
                     let config = app.config;
                     if ( config.hasOwnProperty(name) ) {
                         return config[name];
@@ -903,24 +990,57 @@
                         return false;
                     }
                 };
-                let createInstance = function() {
+
+                const inherit = function(app) {
+                    const nodes = app.getNodes();
+
+                    Object.keys(nodes).forEach(function(familyName) {
+                        const nodeFamily = nodes[familyName];
+                        augment(familyName);
+
+                        Object.keys(nodeFamily).forEach(function(nodeName) {
+                            const node = nodeFamily[nodeName];
+                            addNode(familyName, nodeName, node);
+                        });
+                    });
+                    return this;
+                };
+
+                const overwrite = function(nodeFamily) {
+                    const nodes = app.nodes;
+                    if ( nodes.hasOwnProperty(nodeFamily) ) {
+                        return {
+                            node: function(nodeName, func) {
+                                nodes[nodeFamily][nodeName] = func;
+                                return this;
+                            },
+                            overwrite: overwrite
+                        };
+                    }
+                    return false;
+                };
+
+                const createInstance = function() {
                     return {
-                        schema: schema,
-                        addSchema: addSchema,
-                        augment: augment,
-                        configure: configure,
-                        addNode: addNode,
-                        getNode: getNode,
-                        callNode: callNode,
-                        nodeExists: nodeExists,
-                        getNodes: getNodes,
-                        getConfig: getConfig
+                        schema,
+                        addSchema,
+                        augment,
+                        configure,
+                        addNode,
+                        getNode,
+                        callNode,
+                        nodeExists,
+                        getNodes,
+                        getConfig,
+                        inherit,
+                        overwrite
                     };
                 };
 
                 return createInstance();
             };
-            let setGlobal = function(instance) {
+
+            const setGlobal = function(instance) {
                 base[app.config.name] = base[app.config.name] || instance;
             };
 
@@ -937,20 +1057,25 @@
          */
         return {
             onDomReady,
+            onHover,
+            onEvent,
             delegateEvent,
             getClosest,
             getClass,
+            hasClass,
             getTag,
-            getId,
             getEl,
+            isHovered,
             filterClass,
             append,
             appendIn,
             prepend,
             prependIn,
             remove,
+            removeEl,
             each,
             filter,
+            filterEls,
             jsonCopy,
             isObj,
             isNull,
@@ -964,6 +1089,7 @@
             hasMethod,
             hasKey,
             getKeys,
+            eachKey,
             getUrlParam,
             randomInclusive,
             recurIter,
