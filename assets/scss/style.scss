@@ -1,0 +1,150 @@
+
+/// variables
+$light-blue: rgb(83, 203, 255) !default;
+$blue: rgb(39, 167, 222) !default;
+$dark-blue: rgb(44, 109, 137) !default;
+$darker-blue: rgb(60, 70, 76) !default;
+$bright-purple: #F42567 !default;
+$purple: #b881fc !default;
+$solid-purple: #4E3F79 !default;
+$light-purple: rgba(184, 129, 262, 0.25);
+$dark-purple: #302E43 !default;
+$dark-purple-rgba: rgba(78, 63, 121, 0.3);
+$red: rgb(254, 81, 65) !default;
+$light-red: rgba(217, 30, 24, 0.5) !default;
+$green: #41A85F !default;
+$dark-green: #138c35 !default;
+$light-green: rgb(144, 198, 149) !default;
+$soft-green: #b1dfad !default;
+$yellow: rgb(255, 173, 0) !default;
+$pale-yellow: #E8DCA3;
+$light-yellow: rgba(255, 173, 0, 0.5);
+$white: rgb(255, 255, 255) !default;
+$lighter-grey: rgb(246, 246, 246) !default;
+$light-grey: rgb(242, 242, 242) !default;
+$grey: rgb(216, 216, 216) !default;
+$dark-grey: rgb(156, 156, 156) !default;
+$dimmed: #333 !default;
+$dark-metallic: rgb(49, 49, 52) !default;
+$shadow-0: 0 1px 1px 0 rgba(0,0,0,0.16),0 1px 1px 0 rgba(239,239,239,0.12);
+$shadow-1: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+$shadow-2: 0 8px 17px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+
+$font-shadow-0: 1px 0px 0px rgba(0,0,0,0.5);
+$font-shadow-1: 1px 1px 1px rgba(0,0,0,0.5);
+
+/// body styles
+body {
+  padding: 0px;
+  margin: 0px;
+  background: #3A1C71;
+  background: -webkit-linear-gradient(to right, #FFAF7B, #D76D77, #3A1C71);
+  background: linear-gradient(to right, #FFAF7B, #D76D77, #3A1C71);
+}
+
+a {
+  text-decoration: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0px;
+}
+
+.icon {
+  pointer-events: none;
+  font-size: 28px;
+}
+
+::selection {
+  background-color: $light-purple;
+}
+
+input::placeholder {
+  color: $purple;
+}
+
+input:focus::placeholder {
+  color: $dark-purple;
+}
+
+::-webkit-scrollbar-track
+{
+  -webkit-box-shadow: inset 0 0 12px $dark-purple-rgba;
+  background-color: $light-purple;
+}
+
+::-webkit-scrollbar
+{
+  width: 12px;
+  background-color: $light-purple;
+}
+
+::-webkit-scrollbar-thumb
+{
+  background-color: $solid-purple;
+}
+
+[data-app="users-list"] {
+  position: relative;
+  width: 640px;
+  max-width: 100%;
+  margin: 40px auto;
+  background-color: transparent;
+  font-family: 'Open Sans', sans-serif;
+  overflow: hidden;
+
+  .console {
+
+    textarea {
+      width: calc(100% - 20px);
+      height: 280px;
+      max-height: 320px;
+      max-width: 100%;
+      resize: vertical;
+      overflow-y: auto;
+      box-shadow: $shadow-0;
+      padding: 10px;
+      font-size: 14px;
+      font-family: 'Open Sans', sans-serif;
+    }
+  }
+
+  ul.users {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    transition: all 0.15s ease-in-out;
+
+    li.user {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      margin: 0 5px 5px 0;
+      width: calc(25% - 5px);
+      height: 160px;
+      background-color: $light-grey;
+      box-shadow: $shadow-1;
+      border-radius: 2px;
+      transition: all 0.15s ease-in-out;
+
+      .user-image {
+        width: auto;
+        height: 100px;
+        display: block;
+        text-align: center;
+        margin: 0 0 5px 0;
+      }
+
+      .user-name {
+        display: block;
+        font-weight: bold;
+      }
+    }
+  }
+}

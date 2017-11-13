@@ -1,0 +1,37 @@
+[{
+    "name": "Eric",
+    "thumbnail": "./assets/img/eric.png"
+}, {
+    "name": "Kyle",
+    "thumbnail": "./assets/img/kyle.png"
+}, {
+    "name": "Stan",
+    "thumbnail": "./assets/img/stan.png"
+}, {
+    "name": "Kenny",
+    "thumbnail": "./assets/img/kenny.png"
+}, {
+    "name": "Butters",
+    "thumbnail": "./assets/img/butters.png"
+}, {
+    "name": "Chef",
+    "thumbnail": "./assets/img/chef.png"
+}, {
+    "name": "Mr. Garrison",
+    "thumbnail": "./assets/img/garrison.png"
+}, {
+    "name": "Jimmy",
+    "thumbnail": "./assets/img/jimmy.png"
+}, {
+    "name": "Randy",
+    "thumbnail": "./assets/img/randy.png"
+}, {
+    "name": "Satan",
+    "thumbnail": "./assets/img/satan.png"
+}, {
+    "name": "Mr. Mackey",
+    "thumbnail": "./assets/img/mackey.png"
+}, {
+    "name": "PC Principal",
+    "thumbnail": "./assets/img/pc-principal.png"
+}]
