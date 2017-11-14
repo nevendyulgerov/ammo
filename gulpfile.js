@@ -11,12 +11,12 @@ const autoprefixer = require('gulp-autoprefixer');
 
 // sass file watcher
 gulp.task('sass:watch', function() {
-    gulp.watch('./public/*.scss', ['sass']);
+    gulp.watch('./assets/scss/*.scss', ['sass']);
 });
 
 // preprocess scss to css
 gulp.task('sass', function() {
-    return gulp.src('./public/style.scss')
+    return gulp.src('./assets/scss/style.scss')
         .pipe(sourcemaps.init())
         .pipe(sass({
             outputStyle: 'compressed'
@@ -26,7 +26,7 @@ gulp.task('sass', function() {
             cascade: false
         }))
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./public/'));
+        .pipe(gulp.dest('./assets/css/'));
 });
 
 // concatenate js

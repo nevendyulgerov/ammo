@@ -1,37 +1,49 @@
 [{
     "name": "Eric",
+    "age": 10,
     "thumbnail": "./assets/img/eric.png"
 }, {
     "name": "Kyle",
+    "age": 11,
     "thumbnail": "./assets/img/kyle.png"
 }, {
     "name": "Stan",
+    "age": 9,
     "thumbnail": "./assets/img/stan.png"
 }, {
     "name": "Kenny",
+    "age": 10,
     "thumbnail": "./assets/img/kenny.png"
 }, {
     "name": "Butters",
+    "age": 8,
     "thumbnail": "./assets/img/butters.png"
 }, {
     "name": "Chef",
+    "age": 42,
     "thumbnail": "./assets/img/chef.png"
 }, {
     "name": "Mr. Garrison",
+    "age": 46,
     "thumbnail": "./assets/img/garrison.png"
 }, {
     "name": "Jimmy",
+    "age": 12,
     "thumbnail": "./assets/img/jimmy.png"
 }, {
     "name": "Randy",
+    "age": 32,
     "thumbnail": "./assets/img/randy.png"
 }, {
     "name": "Satan",
+    "age": 66666,
     "thumbnail": "./assets/img/satan.png"
 }, {
     "name": "Mr. Mackey",
+    "age": 39,
     "thumbnail": "./assets/img/mackey.png"
 }, {
     "name": "PC Principal",
+    "age": 28,
     "thumbnail": "./assets/img/pc-principal.png"
 }]

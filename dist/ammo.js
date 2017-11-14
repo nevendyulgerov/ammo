@@ -4,13 +4,13 @@
 
     /**
      * Library: Ammo
-     * Version: 1.3.5
+     * Version: 1.3.6
      * Standard: ECMAScript 2015
      * Author: Neven Dyulgerov
      * License: Released under the MIT license
      *
      * Description:
-     * Provides general purpose utility belt for building web applications with JS
+     * Provides general purpose utility belt for building front-end applications
      * Ammo is available via the global variable {ammo}
      */
 
@@ -291,8 +291,7 @@
 
 
         /**
-         * Public
-         * Random Inclusive
+         * @description Get random integer between two numbers
          * @param min
          * @param max
          * @returns {*}
@@ -305,8 +304,7 @@
 
 
         /**
-         * Public
-         * Recursive Iterator
+         * @description Iterate recursively
          * @param handler
          * @param complete
          * @param index
@@ -324,8 +322,7 @@
 
 
         /**
-         * Public
-         * Poll
+         * @description Poll over an interval of time
          * @param handler
          * @param complete
          * @param interval
@@ -343,8 +340,7 @@
 
 
         /**
-         * Public
-         * Buffer
+         * @description Buffer high-frequency events
          * @returns {function(*=, *=, *=)}
          */
         const buffer = function() {
@@ -362,8 +358,7 @@
 
 
         /**
-         * Public
-         * Extends
+         * @description Augment object with properties from other objects
          * @returns {object}
          */
         const extend = function() {
@@ -445,53 +440,48 @@
 
 
         /**
-         * Public
-         * Template
+         * @description Compile HTML strings to DOM nodes
          * @param html
          * @param items
-         * @returns {{render: (function(*=, *=)), update: (function(*, *, *))}}
+         * @returns {object}
          */
         const template = (html, items) => {
             let compiled;
-            let observerTag = {
+            const observerTag = {
                 start: '{{',
                 end: '}}'
             };
-            let dataAttr = {
+            const dataAttr = {
                 id: 'data-ammo-key',
                 idValue: 'data-ammo-key-value',
                 observer: 'data-ammo-observer'
             };
-            let identifierRegex = /(key:[a-zA-Z]+)/g;
-            let getObserverSchema = () => {
+            const valueObserver = '_ao_';
+            const identifierRegex = /(key:[a-zA-Z]+)/g;
+            const getObserverSchema = () => {
                 return {
-                    indexStart: 0,
-                    indexEnd: 0,
+                    index: 0,
                     name: '',
                     value: '',
-                    context: '',
-                    selector: '',
-                    isAttr: false
+                    isAttr: false,
+                    attr: ''
                 };
             };
-            let getTemplate = (observerName, observable) => {
-                return `<span ${dataAttr.observer}="${observerName}">${observable}</span>`;
-            };
-            let getIdentifier = (html) => {
+            const getIdentifier = (html) => {
                 let match = html.match(identifierRegex);
                 let tag = match[0];
                 let index = tag.indexOf(':');
                 return tag.substring(index + 1, tag.length);
             };
-            let setIdentifier = (html, identifier, value) => {
+            const setIdentifier = (html, identifier, value) => {
                 let match = html.match(identifierRegex);
                 let tag = match[0];
                 let index = html.indexOf(tag);
-                return `${html.substring(0, index - 1)}${dataAttr.id}=${identifier} ${dataAttr.idValue}=${value}${html.substring(index + tag.length + 1, html.length)}`;
+                return `${html.substring(0, index - 1)}${dataAttr.id}="${identifier}" ${dataAttr.idValue}="${value.toLowerCase()}"${html.substring(index + tag.length + 1, html.length)}`;
             };
-            let identifier = getIdentifier(html);
+            const identifier = getIdentifier(html);
 
-            let getObservers = (html, getObserverSchema, observerTag) => {
+            const getObservers = (html, getObserverSchema, observerTag) => {
                 let observersArr = [];
                 let indexStart = html.indexOf(observerTag.start);
                 let indexEnd = html.indexOf(observerTag.end);
@@ -500,8 +490,25 @@
                         let observer = getObserverSchema();
                         observer.name = html.substring(indexStart, indexEnd).replace(observerTag.start, '').replace(observerTag.end, '');
                         observersArr.push(observer);
-                        if ( indexStart - 2 > 0 && html[indexStart - 2] === '=' ) {
+                        if ( indexStart - 2 >= 0 && html[indexStart - 2] === '=' ) {
                             observer.isAttr = true;
+                            let spaceIndex = indexStart - 3;
+                            let attrLetterCount = 0;
+                            let spaceFound = false;
+                            let attrName = '';
+                            while ( ! spaceFound && spaceIndex >= 0 ) {
+                                if ( html[spaceIndex] === ' ' ) {
+                                    spaceFound = true;
+                                    observer.index = html.indexOf('>', spaceIndex);
+                                    break;
+                                }
+                                attrName += html[spaceIndex];
+                                spaceIndex--;
+                                attrLetterCount++;
+                            }
+                            observer.attr = attrName.split('').reverse().join('');
+                        } else {
+                            observer.index = html.indexOf('>', indexStart - observerTag.start.length);
                         }
                         indexStart = html.indexOf(observerTag.start, indexStart + 1);
                         indexEnd = html.indexOf(observerTag.end, indexEnd + 1);
@@ -511,6 +518,24 @@
             };
             let observers = getObservers(html, getObserverSchema, observerTag);
 
+            const insertValueObserverTags = (html) => {
+                let modifiedHtml = html;
+                let valueObserverCount = 0;
+                observers.forEach((observer) => {
+                    if ( ! observer.isAttr ) {
+                        if ( valueObserverCount > 0 ) {
+                            modifiedHtml = [modifiedHtml.slice(0, observer.index + valueObserver.length - 1), valueObserver, modifiedHtml.slice(observer.index + valueObserver.length)].join('');
+                        } else {
+                            modifiedHtml = [modifiedHtml.slice(0, observer.index), valueObserver, modifiedHtml.slice(observer.index + 1)].join('');
+                        }
+                        valueObserverCount++;
+                    }
+                });
+                return modifiedHtml;
+            };
+
+            html = insertValueObserverTags(html);
+
             let compileTemplate = (html, items, observers, identifier) => {
                 let compiled = '';
                 items.forEach((item) => {
@@ -518,12 +543,17 @@
                     template = setIdentifier(template, identifier, item[identifier]);
 
                     if ( observers.length > 0 ) {
-                        observers.forEach((observer) => {
+                        observers.forEach(observer => {
                             observer.value = item[observer.name];
+                            let closingTagIndex = template.indexOf('>', observer.index);
+                            const observerAttr = ` data-ammo-observer="${observer.name}"`;
+
                             if ( ! observer.isAttr ) {
-                                template = template.replace(new RegExp(observerTag.start+observer.name+observerTag.end, 'g'), getTemplate(observer.name, item[observer.name]));
+                                template = template.replace(new RegExp(valueObserver), `${observerAttr}>`);
+                                template = template.replace(new RegExp(observerTag.start+observer.name+observerTag.end, 'g'), item[observer.name]);
                             } else {
-                                template = template.replace(new RegExp(observerTag.start+observer.name+observerTag.end, 'g'), observer.value);
+                                template = [template.slice(0, closingTagIndex), observerAttr, template.slice(closingTagIndex)].join('');
+                                template = template.replace(new RegExp(observerTag.start+observer.name+observerTag.end, 'g'), item[observer.name]);
                             }
                         });
                     }
@@ -540,10 +570,16 @@
                         callback();
                     }
                 },
-                update(id, name, value) {
-                    let context = contx().querySelector(`[${dataAttr.id}="${identifier}"][${dataAttr.idValue}="${id}"]`);
-                    const domObservers = context.querySelectorAll(`[${dataAttr.observer}="${name}"]`);
-                    each(domObservers, observer => observer.textContent = value);
+                updateVal(key, name, value) {
+                    selectAll(`[${dataAttr.id}="${identifier}"][${dataAttr.idValue}="${key.toLowerCase()}"]`).each(el => {
+                        selectAll(`[${dataAttr.observer}="${name}"]`, el).each(observer => observer.innerHTML = value);
+                    });
+                },
+                updateAttr(key, name, value) {
+                    const internalObserver = observers.filter(observer => observer.name === name)[0];
+                    selectAll(`[${dataAttr.id}="${identifier}"][${dataAttr.idValue}="${key.toLowerCase()}"]`).each(el => {
+                        selectAll(`[${dataAttr.observer}="${name}"]`, el).each(observer => observer.setAttribute(internalObserver.attr, value));
+                    });
                 },
                 getId(item) {
                     return item.getAttribute(dataAttr.id);
@@ -556,12 +592,11 @@
 
 
         /**
-         * Public
-         * Request
+         * @description AJAX API based on XMLHttpRequest
          * @param options
          */
         const req = (options) => {
-            let xhr = new XMLHttpRequest();
+            const xhr = new XMLHttpRequest();
             xhr.onreadystatechange = () => {
                 if ( xhr.readyState === XMLHttpRequest.DONE ) {
                     if ( xhr.status === 200 ) {
@@ -575,16 +610,20 @@
             if ( options.data ) {
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 let params = [];
-                let dataKeys = getKeys(options.data);
-                dataKeys.forEach((k) => {
-                    params.push(`${k}=${(options.data[k])}`);
-                });
+                const dataKeys = getKeys(options.data);
+                dataKeys.forEach((k) => params.push(`${k}=${(options.data[k])}`));
                 xhr.send(params.join('&'));
             } else {
                 xhr.send();
             }
         };
 
+
+        /**
+         * @description Local storage API
+         * @param key
+         * @returns {*}
+         */
         const store = function(key) {
             let storage;
             if ( ! isStr(key) ) {
@@ -609,19 +648,19 @@
             };
             storage = storageTemplates.localStorage;
 
-            let decodeData = function(data) {
+            const decodeData = function(data) {
                 return JSON.parse(data);
             };
-            let encodeData = function(data) {
+            const encodeData = function(data) {
                 return JSON.stringify(data);
             };
-            let getData = function(key) {
+            const getData = function(key) {
                 return decodeData(storage.getStorageItem(key));
             };
-            let setData = function(key, data) {
+            const setData = function(key, data) {
                 storage.setStorageItem(key, encodeData(data));
             };
-            let removeData = function(key) {
+            const removeData = function(key) {
                 storage.removeStorageItem(key);
             };
 
@@ -659,8 +698,7 @@
 
 
         /**
-         * Public
-         * Sequence
+         * @description Create sequential execution for async functions
          * @returns {{chain: chain, execute: execute}}
          */
         const sequence = function() {
@@ -683,11 +721,11 @@
 
                 callback = chained[index];
                 callback({
-                    resolve: function(_value) {
+                    resolve(_value) {
                         value = _value;
                         execute(++index);
                     },
-                    reject: function(_error) {
+                    reject(_error) {
                         error = _error;
                         execute(++index);
                     },
@@ -706,24 +744,22 @@
 
 
         /**
-         * Public
-         * App
-         * @param {object} storeData
-         * @param {object} config
+         * @description Create encapsulated, augmentative, object-based application
+         * @param {object} store
+         * @param {object} props
          * @returns {Error}
          */
-        const app = function(storeData, config) {
-            const hasStore = isObj(storeData);
-            const hasConfig = isObj(config);
-            const isGlobal = hasConfig && isBool(config.global) && config.global;
+        const app = function(store, props) {
+            const hasStore = isObj(store);
+            const hasProps = isObj(props);
+            const isGlobal = hasProps && isBool(props.global) && props.global;
 
-            if ( isGlobal && ! hasConfig || isGlobal && hasConfig && isUndef(config.name) ) {
-                return new Error(`[Initialzr] Invalid initialization. Global applications require a name. Pass a name as part of the app's config.`);
+            if ( isGlobal && ! hasProps || isGlobal && hasProps && isUndef(props.name) ) {
+                throw new Error(`[ammo.app] Invalid initialization. Global applications require a name{string}. Pass a name as part of the app's props{object}.`);
             }
             let app = {
-                config: hasConfig ? config : {},
-                store: hasStore ? storeData : {},
-                storeKey: '',
+                store: hasStore ? store : {},
+                props: hasProps ? props : {},
                 nodes: {}
             };
             let schemas = {
@@ -807,10 +843,10 @@
                     return hasProp(app.nodes, nodeFamily) && isFunc(app.nodes[nodeFamily][nodeName]);
                 };
 
-                const getConfig = function(name) {
-                    let config = app.config;
-                    if ( hasProp(config, name) ) {
-                        return config[name];
+                const getProps = function(name) {
+                    const props = app.props;
+                    if ( hasProp(props, name) ) {
+                        return props[name];
                     } else {
                         return false;
                     }
@@ -873,12 +909,12 @@
                     }
                 };
 
-                const syncStorage = function(storeKey) {
-                    if ( ! app.storeKey && isStr(storeKey) ) {
-                        app.storeKey = storeKey;
-                        storage = store(storeKey);
-                        storage.setData(app.store);
+                const syncStorage = function() {
+                    if ( isUndef(app.props.name) ) {
+                        throw new Error(`[ammo.app] Invalid synchronization with localStorage. Synchronized apps require a name. Pass a name as part of the app's props.`);
                     }
+                    storage = ammo.store(app.props.name);
+                    storage.setData(app.store);
                     return this;
                 };
 
@@ -897,7 +933,7 @@
                         callNode,
                         nodeExists,
                         getNodes,
-                        getConfig,
+                        getProps,
                         inherit,
                         overwrite,
                         getStore,
@@ -914,7 +950,7 @@
             const setGlobal = instance => base[app.config.name] = base[app.config.name] || instance;
 
             if ( isGlobal ) {
-                setGlobal(factory());
+                return setGlobal(factory());
             } else {
                 return factory();
             }
@@ -922,7 +958,7 @@
 
 
         /**
-         *
+         * @description Set style property for given node
          * @param selection
          * @param index
          * @param prop
@@ -934,11 +970,11 @@
 
 
         /**
-         *
-         * @param selection
-         * @param prop
-         * @param value
-         * @param index
+         * @description Set attribute property for given node
+         * @param {object} selection
+         * @param {string} prop
+         * @param {string/function} value
+         * @param {number} index
          */
         const attr = (selection, prop, value, index) => {
             const currValue = selection.getAttribute(prop);
@@ -947,21 +983,22 @@
 
 
         /**
-         *
-         * @param selection
-         * @param value
-         * @param index
+         * @description Set innerHTML for given node
+         * @param {object} selection
+         * @param {(string|function)} value
+         * @param {number=} index
          */
         const elText = (selection, value, index) => {
             selection.innerHTML = isFunc(value) ? value(selection.innerHTML, index) || selection.innerHTML : value;
         };
 
+
         /**
-         *
-         * @param selection
-         * @param value
-         * @param selector
-         * @param index
+         * @description Filter nodes based on signature (static - value is a string, dynamic - value is a function)
+         * @param {object} selection
+         * @param {(string|function)} value
+         * @param {string} selector
+         * @param {number=} index
          * @returns {*}
          */
         const filter = (selection, value, selector, index) => {
@@ -986,9 +1023,9 @@
 
 
         /**
-         * @description Select a single DOM node, matching a selector
-         * @param selector
-         * @param context
+         * @description DOM manipulation API for single node
+         * @param {(string|object)} selector
+         * @param {object=} context
          * @returns {object}
          */
         const select = function(selector, context) {
@@ -1024,9 +1061,9 @@
 
 
         /**
-         * @description Select all DOM nodes, matching a selector
-         * @param selector
-         * @param context
+         * @description DOM manipulation API for node lists
+         * @param {string} selector
+         * @param {object=} context
          * @returns {object}
          */
         const selectAll = function(selector, context) {
@@ -1071,8 +1108,15 @@
                     ammo.each(filtered || selection, (el, index) => el.addEventListener(event, callback));
                     return this;
                 },
+                each(handler) {
+                    ammo.each(filtered || selection, handler);
+                },
+                eq(index) {
+                    const nodes = filtered || selection;
+                    return nodes.length > 0 && isObj(nodes[index]) ? nodes[index]: undefined;
+                },
                 async(handler, complete) {
-                    const sequencer = sequence();
+                    const sequencer = ammo.sequence();
 
                     ammo.each(filtered || selection, (el, index) => {
                         sequencer.chain(seq => handler(seq.resolve, el, index));
@@ -1091,6 +1135,55 @@
 
 
         /**
+         * @description Scroll spy API, exposing callbacks for 'scroll' events
+         * @param {object} options
+         */
+        const scrollSpy = (options) => {
+            const isValid = isObj(options) && (isNum(options.offset) || isFunc(options.offset)) && isObj(options.callbacks) && isFunc(options.callbacks.onBefore) && isFunc(options.callbacks.onAfter);
+
+            if ( ! isValid ) {
+                throw new Error('[Ammo.scrollSpy] Invalid initialization. Make sure to provide an options object, containing offset{number} and callbacks{object}, containing onBefore{function} and onAfter{function}.');
+            }
+
+            const offset = options.offset;
+            const callbacks = options.callbacks;
+            const initOnLoad = isBool(options.initOnLoad) ? options.initOnLoad : false;
+            let docElem = document.documentElement;
+            let didScroll = false;
+
+            const scrollY = () => window.pageYOffset || docElem.scrollTop;
+
+            const scrollPage = () => {
+                const sy = scrollY();
+                const targetOffset = isFunc(offset) ? offset() : offset;
+
+                if ( sy < targetOffset ) {
+                    callbacks.onBefore(sy, targetOffset);
+                } else {
+                    callbacks.onAfter(sy, targetOffset);
+                }
+
+                didScroll = false;
+            };
+
+            const init = function() {
+                window.addEventListener('scroll', () => {
+                    if ( !didScroll ) {
+                        setTimeout( scrollPage, 50 );
+                        didScroll = true;
+                    }
+                }, false);
+            };
+
+            if ( initOnLoad ) {
+                scrollPage();
+            }
+
+            init();
+        };
+
+
+        /**
          * Public API
          */
         return {
@@ -1098,6 +1191,7 @@
             onHover,
             delegateEvent,
             getEl,
+            getEls,
             isHovered,
             appendAfter,
             appendBefore,
@@ -1124,14 +1218,14 @@
             poll,
             buffer,
             extend,
-            compile,
             template,
             req,
             store,
             sequence,
             app,
             select,
-            selectAll
+            selectAll,
+            scrollSpy
         };
     })();
 })(window);

@@ -40,6 +40,7 @@ body {
   background: #3A1C71;
   background: -webkit-linear-gradient(to right, #FFAF7B, #D76D77, #3A1C71);
   background: linear-gradient(to right, #FFAF7B, #D76D77, #3A1C71);
+  overflow-x: hidden;
 }
 
 a {
@@ -86,7 +87,8 @@ input:focus::placeholder {
 
 [data-app="users-list"] {
   position: relative;
-  width: 640px;
+  width: 660px;
+  padding: 10px;
   max-width: 100%;
   margin: 40px auto;
   background-color: transparent;
@@ -132,18 +134,43 @@ input:focus::placeholder {
       box-shadow: $shadow-1;
       border-radius: 2px;
       transition: all 0.15s ease-in-out;
+      text-overflow: ellipsis;
+      overflow: hidden;
+
+      @media (max-width: 640px) {
+        width: calc(50% - 12px);
+      }
+
+      @media (max-width: 320px) {
+        width: calc(100% - 20px);
+      }
+
+      &.active {
+        background-color: $pale-yellow;
+        transition: all 0.15s ease-in-out;
+
+        .user-image {
+          height: 120px;
+          transition: all 0.15s ease-in-out;
+        }
+      }
 
       .user-image {
         width: auto;
-        height: 100px;
+        height: auto;
+        max-height: calc(100% - 60px);
+        max-width: calc(100% - 10px);
         display: block;
         text-align: center;
         margin: 0 0 5px 0;
+        transition: all 0.15s ease-in-out;
       }
 
       .user-name {
         display: block;
         font-weight: bold;
+        text-align: center;
+        padding: 0 5px;
       }
     }
   }
