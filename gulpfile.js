@@ -21,6 +21,8 @@ gulp.task('sass', function() {
         .pipe(sass({
             outputStyle: 'compressed'
         }).on('error', sass.logError))
+
+        // post-process css with prefixes
         .pipe(autoprefixer({
             browsers: ['last 5 versions'],
             cascade: false
