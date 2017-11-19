@@ -17,3 +17,15 @@ The library is 40KB in size and about 1200 lines of code.
 
 ## Notes
 * Ammo is transpile-compatible. You can transpile it to ES5 by using babel and other js transpilers.
+
+## Demo App
+This repo contains a demo application which demonstrates several ammo methods, including ammo.app (app building construct), ammo.template (html lists compilator), ammo.sequence (promise implementation), ammo.selectAll (DOM manipulation API). The app's assets reside in ./assets. To run the app:
+
+## Demo App Requirements
+* npm
+
+## How to Run the Demo App:
+
+1. Run `npm install` to install the project dependencies.
+2. Run the app using `npm run server`.
+3. App becomes available at: `http://localhost:3000`.
