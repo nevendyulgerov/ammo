@@ -4,7 +4,7 @@
 
     /**
      * Library: Ammo
-     * Version: 1.3.6
+     * Version: 1.3.7
      * Standard: ECMAScript 2015
      * Author: Neven Dyulgerov
      * License: Released under the MIT license
@@ -440,7 +440,7 @@
 
 
         /**
-         * @description Compile HTML strings to DOM nodes
+         * @description Compile observable HTML strings to DOM nodes
          * @param html
          * @param items
          * @returns {object}
@@ -702,7 +702,7 @@
          * @returns {{chain: chain, execute: execute}}
          */
         const sequence = function() {
-            let chained = [];
+            const chained = [];
             let value;
             let error;
 
@@ -712,14 +712,12 @@
                 }
                 return this;
             };
-            const execute = function(index) {
-                let callback;
-                index = typeof index === "number" ? index : 0;
+            const execute = function(index = 0) {
                 if ( ! chained || index >= chained.length ) {
                     return true;
                 }
 
-                callback = chained[index];
+                const callback = chained[index];
                 callback({
                     resolve(_value) {
                         value = _value;
@@ -965,7 +963,8 @@
          * @param value
          */
         const style = (selection, prop, value, index) => {
-            selection.style.setProperty(prop, isFunc(value) ? value(selection, index) || selection.style.getProperty(prop) : value, '');
+            const currStyle = selection.style.getPropertyValue(prop);
+            selection.style.setProperty(prop, isFunc(value) ? (value(selection, currStyle, index) || selection.style.getProperty(prop, currStyle)) : value, '');
         };
 
 
@@ -989,7 +988,8 @@
          * @param {number=} index
          */
         const elText = (selection, value, index) => {
-            selection.innerHTML = isFunc(value) ? value(selection.innerHTML, index) || selection.innerHTML : value;
+            const currText = selection.innerHTML;
+            selection.innerHTML = isFunc(value) ? value(currText, index) || currText : value;
         };
 
 
@@ -1001,7 +1001,7 @@
          * @param {number=} index
          * @returns {*}
          */
-        const filter = (selection, value, selector, index) => {
+        const filterNode = (selection, value, selector, index) => {
             if ( isFunc(value) ) {
                 return value(selection, index);
             }
@@ -1067,13 +1067,13 @@
          * @returns {object}
          */
         const selectAll = function(selector, context) {
-            let selection = contx(context).querySelectorAll(selector);
+            let selection = getEls(selector, context);
             let filtered;
             return {
                 filter(value) {
                     filtered = [];
                     ammo.each(selection, (el, index) => {
-                        if ( filter(el, value, selector, index) ) {
+                        if ( filterNode(el, value, selector, index) ) {
                             filtered.push(el);
                         }
                     });
@@ -1115,11 +1115,21 @@
                     const nodes = filtered || selection;
                     return nodes.length > 0 && isObj(nodes[index]) ? nodes[index]: undefined;
                 },
+                index(indexSelector) {
+                    let matchIndex = -1;
+                    this.each((el, index) => {
+                        if ( el.isSameNode(indexSelector) && matchIndex === -1 ) {
+                            matchIndex = index;
+                        }
+                    });
+                    return matchIndex;
+                },
                 async(handler, complete) {
                     const sequencer = ammo.sequence();
+                    const nodes = filtered || selection;
 
-                    ammo.each(filtered || selection, (el, index) => {
-                        sequencer.chain(seq => handler(seq.resolve, el, index));
+                    ammo.each(nodes, (el, index) => {
+                        sequencer.chain(seq => handler(seq.resolve, el, index, nodes.length));
                     });
 
                     if ( isFunc(complete) ) {
