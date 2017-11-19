@@ -19,7 +19,7 @@ The library is 40KB in size and about 1200 lines of code.
 * Ammo is transpile-compatible. You can transpile it to ES5 by using babel and other js transpilers.
 
 ## Demo App
-This repo contains a demo application which demonstrates several ammo methods, including ammo.app (app building construct), ammo.template (html lists compilator), ammo.sequence (promise implementation), ammo.selectAll (DOM manipulation API). The app's assets reside in ./assets. To run the app:
+This repo contains a demo application which demonstrates several ammo methods, including ammo.app (app building construct), ammo.template (html lists compilator), ammo.sequence (promise implementation), ammo.selectAll (DOM manipulation API). The app's assets reside in ./assets.
 
 ## Demo App Requirements
 * npm
