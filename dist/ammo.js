@@ -945,7 +945,7 @@
                 return createInstance();
             };
 
-            const setGlobal = instance => base[app.config.name] = base[app.config.name] || instance;
+            const setGlobal = instance => base[app.props.name] = base[app.props.name] || instance;
 
             if ( isGlobal ) {
                 return setGlobal(factory());
