@@ -8,14 +8,13 @@ const minify = require('gulp-minify');
 const sourcemaps = require('gulp-sourcemaps');
 const autoprefixer = require('gulp-autoprefixer');
 
-
 // sass file watcher
-gulp.task('sass:watch', function() {
+gulp.task('sass:watch', () => {
     gulp.watch('./assets/scss/*.scss', ['sass']);
 });
 
 // preprocess scss to css
-gulp.task('sass', function() {
+gulp.task('sass', () => {
     return gulp.src('./assets/scss/style.scss')
         .pipe(sourcemaps.init())
         .pipe(sass({
@@ -33,7 +32,6 @@ gulp.task('sass', function() {
 
 // concatenate js
 gulp.task('js:concat', () => {
-    "use strict";
     return gulp.src(['./public/ammo.js', './public/app.js'])
         .pipe(sourcemaps.init())
         .pipe(babel({
@@ -47,13 +45,12 @@ gulp.task('js:concat', () => {
 
 // minify js
 gulp.task('js:minify', () => {
-    "use strict";
-    gulp.src('./public/main.js')
+    gulp.src('./dist/ammo.js')
         .pipe(minify({
             ext: {
                 src: '.js',
                 min: '.min.js'
             }
         }))
-        .pipe(gulp.dest('./public/'));
+        .pipe(gulp.dest('./dist/'));
 });
