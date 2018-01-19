@@ -5,16 +5,21 @@
  *  - ammo.js
  */
 
-((base, ammo) => {
-    "use strict";
+(ammo => {
+    'use strict';
 
-    const state = { users: [] };
-    const props = { name: 'usersList' };
+    const props = {
+        name: 'usersList',
+        global: true,
+        storeKey: 'usersList'
+    };
+    const state = {
+        users: []
+    };
 
-    base[props.name] = ammo.app(state, props).syncStorage().schema('default');
-    const app = base[props.name];
+    const app = ammo.app(props, state).schema('default').syncWithPersistentStore();
 
-        app.configure('events')
+    app.configure('events')
         .node('onReady', callback => ammo.onDomReady(callback))
         .node('onSelectUser', callback => ammo.delegateEvent('click', 'user', callback));
 
@@ -36,7 +41,7 @@
 
     app.configure('actions')
         .node('getUsers', (callback) => {
-            ammo.req({
+            ammo.request({
                 url: './assets/data/users.json',
                 callback
             });
@@ -60,7 +65,7 @@
                     domUsers = ammo.select('.users', domApp).get();
 
                     app.updateStore('users', users => [...users, ...usersFirstBatch]);
-                    usersStore = app.getStoreData('users');
+                    usersStore = app.getStore('users');
                     renderers.renderUsers(usersStore, domUsers);
 
                     seq.resolve();
@@ -72,7 +77,7 @@
                     setTimeout(() => {
                         const usersSecondBatch = seq.response.value;
                         app.updateStore('users', users => [...users, ...usersSecondBatch]);
-                        usersStore = app.getStoreData('users');
+                        usersStore = app.getStore('users');
                         renderers.renderUsers(usersStore, domUsers);
                         seq.resolve();
                     }, 2000);
@@ -84,7 +89,7 @@
                     setTimeout(() => {
                         const usersThirdBatch = seq.response.value;
                         app.updateStore('users', users => [...users, ...usersThirdBatch]);
-                        usersStore = app.getStoreData('users');
+                        usersStore = app.getStore('users');
                         template = renderers.renderUsers(usersStore, domUsers);
                         seq.resolve();
                     }, 1000);
@@ -102,7 +107,7 @@
                                 const newUsers = res.slice(start, end);
 
                                 app.updateStore('users', users => [...users, ...newUsers]);
-                                const usersStore = app.getStoreData('users');
+                                const usersStore = app.getStore('users');
                                 renderers.renderUsers(usersStore, domUsers);
 
                                 resolve(index < iterations - 1);
@@ -139,29 +144,10 @@
                     template.updateVal('Stan', 'age', 111);
                     seq.resolve();
                 })
-                .chain(seq => {
-                    ammo.scrollSpy({
-                        offset: () => {
-                            const users = ammo.selectAll('.user');
-                            const usersCount = users.get().length;
-                            return users.filter((el, index) => index === parseInt(usersCount / 4)).eq(0).offsetTop;
-                        },
-                        initOnLoad: true,
-                        callbacks: {
-                            onBefore() {
-                                console.log('on before');
-                            },
-                            onAfter() {
-                                console.log('on after');
-                            }
-                        }
-                    });
-                    seq.resolve();
-                })
                 .execute();
         });
 
     app.callNode('events', 'onReady',
         app.getNode('actions', 'init'));
 
-})(window, ammo);
+})(ammo);
