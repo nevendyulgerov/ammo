@@ -1,30 +1,27 @@
 
 ((base) => {
-    'use strict';
+    "use strict";
 
     /**
      * Library: Ammo
-     * Version: 1.3.7
-     * Standard: ECMAScript 2015
      * Author: Neven Dyulgerov
-     * License: Released under the MIT license
+     * v1.5.2
      *
-     * Description:
-     * Provides general purpose utility belt for building front-end applications
-     * Ammo is available via the global variable {ammo}
+     * Provides general purpose utility belt for building web applications with JS
+     * Ammo is available as the global variable {ammo}
+     * Released under the MIT license
      */
 
     base.ammo = (function() {
 
-
         /**
          * @description Provide DOM context
-         * Contx
          * @param context
          * @returns {*|HTMLDocument}
          */
-        const contx = (context) => context || base.document;
-
+        const contx = (context) => {
+            return context || base.document;
+        };
 
         /**
          * @description Event handler for DOM Ready
@@ -32,9 +29,7 @@
          */
         const onDomReady = (callback) => {
             base.document.addEventListener('DOMContentLoaded', callback);
-            return this;
         };
-
 
         /**
          * @description Event handler for hover
@@ -55,7 +50,6 @@
             });
         };
 
-
         /**
          * @description Delegate event to given selector with className
          * @param event
@@ -64,13 +58,26 @@
          * @param context
          */
         const delegateEvent = (event, className, callback, context) => {
+            let classNames = className.indexOf('.') > -1 ? className.split('.') : [className];
+            classNames = classNames.filter(item => !isUndef(item) && item !== '');
+            let containsCounter = 0;
+
             contx(context).addEventListener(event, (e) => {
-                if ( e.target && e.target.classList.contains(className) ) {
+                if ( e.target ) {
+                    classNames.map(className => {
+                        if ( e.target.classList.contains(className) ) {
+                            containsCounter++;
+                        }
+                        return className;
+                    });
+                }
+
+                if ( containsCounter === classNames.length && containsCounter > 0 ) {
                     callback(e);
                 }
+                containsCounter = 0;
             });
         };
-
 
         /**
          * @description Get node by given selector
@@ -80,24 +87,12 @@
          */
         const getEl = (selector, context) => contx(context).querySelector(selector);
 
-
         /**
          * @description Get node list by given selector
          * @param selector
          * @param context
          */
         const getEls = (selector, context) => contx(context).querySelectorAll(selector);
-
-
-        /**
-         * @description Remove node from the DOM
-         * @param domEl
-         */
-        const removeEl = (domEl) => {
-            domEl.parentNode.removeChild(domEl);
-            return this;
-        };
-
 
         /**
          * @description Check if element is hovered
@@ -108,7 +103,6 @@
             const domEl = getEl(selector);
             return domEl.parentNode.querySelector(':hover') === domEl;
         };
-
 
         /**
          * @description Append HTML content after the end of a node
@@ -121,7 +115,6 @@
             return this;
         };
 
-
         /**
          * @description Append HTML content before the end of a node
          * @param html
@@ -132,7 +125,6 @@
             contx(context).insertAdjacentHTML('beforeend', html.toString());
             return this;
         };
-
 
         /**
          * @description Prepend HTML content after the beginning of a node
@@ -145,7 +137,6 @@
             return this;
         };
 
-
         /**
          * @description Prepend HTML content before the beginning of a node
          * @param html
@@ -156,19 +147,31 @@
             return this;
         };
 
+        /**
+         * @description Remove node from the DOM
+         * @param domEl
+         */
+        const removeEl = (domEl) => {
+            domEl.parentNode.removeChild(domEl);
+            return this;
+        };
 
         /**
-         * @description Linear iterator for object properties
+         * @description Iterate object own properties
          * @param elements
          * @param callback
          */
         const each = (elements, callback) => {
-            Object.keys(elements).forEach((k, i) => {
-                callback(elements[k], i);
-            });
-            return this;
+            Object.keys(elements).forEach((key, index) =>
+                callback(elements[key], index));
         };
 
+        /**
+         * @description Create an object copy with json conversion
+         * JSON Copy
+         * @param obj
+         */
+        const jsonCopy = obj => JSON.parse(JSON.stringify(obj));
 
         /**
          * @description Check if value is of type 'object'
@@ -177,14 +180,12 @@
          */
         const isObj = val => typeof val === 'object' && !isArr(val) && !isNull(val);
 
-
         /**
          * @description Check if value is of type 'null'
          * @param val
          * @returns {boolean}
          */
         const isNull = val => val === null;
-
 
         /**
          * @description Check if value is of type 'number'
@@ -193,14 +194,12 @@
          */
         const isNum = val => typeof val === 'number' && !isNaN(val);
 
-
         /**
          * @description Check if value is of type 'function'
          * @param val
          * @returns {boolean}
          */
         const isFunc = val => typeof val === 'function';
-
 
         /**
          * @description Check if value is of type 'array'
@@ -209,14 +208,12 @@
          */
         const isArr = val => Array.isArray(val);
 
-
         /**
          * @description Check if value is of type 'string'
          * @param val
          * @returns {boolean}
          */
         const isStr = val => typeof val === 'string';
-
 
         /**
          * @description Check if value is of type 'undefined'
@@ -225,14 +222,12 @@
          */
         const isUndef = val => typeof val === 'undefined';
 
-
         /**
          * @description Check if value is of type 'boolean'
          * @param val
          * @returns {boolean}
          */
         const isBool = val => typeof val === 'boolean';
-
 
         /**
          * @description Check if object has property
@@ -242,15 +237,13 @@
          */
         const hasProp = (obj, prop) => obj.hasOwnProperty(prop);
 
-
         /**
          * @description Check if object has method
          * @param obj
          * @param method
          * @returns {boolean}
          */
-        const hasMethod = (obj, method) => hasProp(obj, method) && isFunc(method);
-
+        const hasMethod = (obj, method) => hasProp(obj, method) && isFunc(obj[method]);
 
         /**
          * @description Check if object has key
@@ -260,14 +253,12 @@
          */
         const hasKey = (obj, key) => getKeys(obj).indexOf(key) > -1;
 
-
         /**
          * @description Get object keys
          * @param obj
          * @returns {Array}
          */
         const getKeys = obj => Object.keys(obj);
-
 
         /**
          * @description Iterate over each key of an object
@@ -278,7 +269,6 @@
             Object.keys(obj).forEach((k, i) => callback(obj[k], k, i));
         };
 
-
         /**
          * @description Get url param
          * @param name
@@ -288,7 +278,6 @@
             const match = new RegExp(`[?&]${name}=([^&]*)`).exec(window.location.search);
             return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
         };
-
 
         /**
          * @description Get random integer between two numbers
@@ -301,7 +290,6 @@
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
         };
-
 
         /**
          * @description Iterate recursively
@@ -320,7 +308,6 @@
             });
         };
 
-
         /**
          * @description Poll over an interval of time
          * @param handler
@@ -338,10 +325,9 @@
             }, interval);
         };
 
-
         /**
          * @description Buffer high-frequency events
-         * @returns {function(*=, *=, *=)}
+         * @returns {function}
          */
         const buffer = function() {
             let timers = {};
@@ -355,7 +341,6 @@
                 timers[id] = setTimeout(clb, ms);
             };
         };
-
 
         /**
          * @description Augment object with properties from other objects
@@ -376,71 +361,47 @@
             return enhancedObj;
         };
 
-
         /**
-         * Public
-         * Compile
-         * @param html
-         * @param items
-         * @returns {string}
+         * @description Run methods excluding
+         * @param obj
+         * @param excludes
          */
-        const compile = (html, items) => {
-            let tag = {
-                start: '{iter}',
-                end: '{/iter}'
-            };
-            let iterators = ((html) => {
-                let iterators = [];
-                let indexStart = html.indexOf(tag.start);
-                let indexEnd = html.indexOf(tag.end);
-                if ( indexStart > -1 && indexEnd > -1 ) {
-                    while ( indexStart > -1 && indexEnd > -1 ) {
-                        iterators.push({
-                            indexStart,
-                            indexEnd,
-                            html: html.substring(indexStart, indexEnd).replace(tag.start, '').replace(tag.end, '').replace(/>\s+</g, '><').trim()
-                        });
-                        indexStart = html.indexOf(tag.start, indexStart + 1);
-                        indexEnd = html.indexOf(tag.end, indexEnd + 1);
-                    }
+        const runMethods = (obj, excludes) => {
+            const excludedMethods = isArr(excludes) ? excludes : [];
+
+            eachKey(obj, (prop, key) => {
+                if (!isFunc(prop) || excludedMethods.indexOf(key) > -1) {
+                    return false;
                 }
-                return iterators;
-            })(html);
-            let compileTemplate = (html, items) => {
-                let compiled = '';
-                items.forEach((item) => {
-                    let keys = Object.keys(item);
-                    let template = html;
-
-                    if ( iterators.length > 0 ) {
-                        iterators.forEach((iter) => {
-                            let iterHtml = '';
-                            let itemHtml = iter.html;
-                            template = template.substring(0, iter.indexStart).trim()+tag.start+template.substring(iter.indexEnd + tag.end.length, template.length - 1).trim();
-
-                            keys.forEach((k) => {
-                                itemHtml = iter.html.replace(new RegExp('{key}', 'g'), k);
-                                itemHtml = itemHtml.replace(new RegExp('{value}', 'g'), item[k]);
-                                iterHtml += itemHtml;
-                            });
-                            template = template.replace(tag.start, iterHtml);
-                        });
-                    } else {
-                        keys.forEach((k) => {
-                            template = template.replace(new RegExp('{'+k+'}', 'g'), item[k]);
-                        });
-                    }
-                    compiled += template;
-                });
-                return compiled;
-            };
-
-            return compileTemplate(html, items);
+                prop();
+            });
         };
 
+        /**
+         * @description Parse variable value by type
+         * @param val
+         * @returns {*}
+         */
+        const parseToType = val => {
+            if (!isStr(val)) {
+                return undefined;
+            }
+
+            if (val === 'true') {
+                return true;
+            } else if (val === 'false') {
+                return false;
+            } else if (val === 'null') {
+                return null;
+            } else if (+val + '' === val) {
+                return +val;
+            }
+
+            return val;
+        };
 
         /**
-         * @description Compile observable HTML strings to DOM nodes
+         * @description Compile HTML strings to DOM nodes
          * @param html
          * @param items
          * @returns {object}
@@ -590,13 +551,12 @@
             };
         };
 
-
         /**
          * @description AJAX API based on XMLHttpRequest
          * @param options
          */
-        const req = (options) => {
-            const xhr = new XMLHttpRequest();
+        const request = (options) => {
+            let xhr = new XMLHttpRequest();
             xhr.onreadystatechange = () => {
                 if ( xhr.readyState === XMLHttpRequest.DONE ) {
                     if ( xhr.status === 200 ) {
@@ -610,14 +570,15 @@
             if ( options.data ) {
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 let params = [];
-                const dataKeys = getKeys(options.data);
-                dataKeys.forEach((k) => params.push(`${k}=${(options.data[k])}`));
+                let dataKeys = getKeys(options.data);
+                dataKeys.forEach((k) => {
+                    params.push(`${k}=${(options.data[k])}`);
+                });
                 xhr.send(params.join('&'));
             } else {
                 xhr.send();
             }
         };
-
 
         /**
          * @description Local storage API
@@ -630,7 +591,7 @@
                 return new Error("[Storage] Invalid storage key. Provide a key {string}.");
             }
 
-            let storageTemplates = {
+            const storageTemplates = {
                 localStorage: {
                     getStorage: function() {
                         return localStorage;
@@ -666,7 +627,7 @@
 
             return {
                 getData: function() {
-                    let data = getData(key);
+                    const data = getData(key);
                     return data !== null ? getData(key) : undefined;
                 },
                 setData: function(newData) {
@@ -682,20 +643,19 @@
                     return data[itemKey];
                 },
                 setItem: function(itemKey, itemValue) {
-                    let data = this.getData();
+                    const data = this.getData();
                     data[itemKey] = itemValue;
                     setData(key, data);
                     return this;
                 },
                 removeItem: function(itemKey) {
-                    let data = this.getData();
+                    const data = this.getData();
                     data[itemKey] = undefined;
                     setData(key, data);
                     return this;
                 }
             };
         };
-
 
         /**
          * @description Create sequential execution for async functions
@@ -713,18 +673,21 @@
                 return this;
             };
             const execute = function(index = 0) {
+                let callback;
                 if ( ! chained || index >= chained.length ) {
                     return true;
                 }
 
-                const callback = chained[index];
+                callback = chained[index];
                 callback({
-                    resolve(_value) {
+                    resolve: function(_value) {
                         value = _value;
+                        error = null;
                         execute(++index);
                     },
-                    reject(_error) {
+                    reject: function(_error) {
                         error = _error;
+                        value = null;
                         execute(++index);
                     },
                     response: {
@@ -734,100 +697,153 @@
                 });
             };
 
-            return {
-                chain,
-                execute
-            };
+            return { chain, execute };
         };
 
+        /**
+         * @description Determine type checker
+         * @param type
+         * @returns {*}
+         */
+        const determineTypeChecker = type => {
+            switch ( type ) {
+                case 'number':
+                    return isNum;
+                case 'object':
+                    return isObj;
+                case 'null':
+                    return isNull;
+                case 'function':
+                    return isFunc;
+                case 'array':
+                    return isArr;
+                case 'string':
+                    return isStr;
+                case 'undefined':
+                    return isUndef;
+                case 'bool':
+                    return isBool;
+                default:
+                    return isUndef;
+            }
+        };
 
         /**
-         * @description Create encapsulated, augmentative, object-based application
-         * @param {object} store
+         * @description Set strong typed object
+         * @param config
+         * @returns {*}
+         */
+        const setStrongTypedObject = config => {
+            const proxy = {};
+            eachKey(config, (obj, key) => proxy[key] = obj.value);
+
+            return new Proxy(proxy, {
+                get(target, prop) {
+                    return target[prop];
+                },
+                set(target, prop, value) {
+                    const type = config[prop].type;
+                    const typeChecker = determineTypeChecker(type);
+
+                    if ( ! typeChecker(value) ) {
+                        throw new Error(`[Ammo.StrongType] Invalid type. Expected type for field {${prop}} is {${type}}`);
+                    }
+
+                    target[prop] = value;
+                    return true;
+                }
+            });
+        };
+
+        /**
+         * @description Create encapsulated, augmentative, object-oriented application
          * @param {object} props
+         * @param {object} store
          * @returns {Error}
          */
-        const app = function(store, props) {
+        const app = function (props, store) {
             const hasStore = isObj(store);
             const hasProps = isObj(props);
             const isGlobal = hasProps && isBool(props.global) && props.global;
+            const isStoreStrongTyped = hasProps && isBool(props.strongTypes) && props.strongTypes;
 
-            if ( isGlobal && ! hasProps || isGlobal && hasProps && isUndef(props.name) ) {
-                throw new Error(`[ammo.app] Invalid initialization. Global applications require a name{string}. Pass a name as part of the app's props{object}.`);
+            if (isGlobal && !hasProps || isGlobal && hasProps && isUndef(props.name)) {
+                throw new Error(`[Ammo.app] Invalid initialization. Global applications require a name. Pass a name as part of the app's props.`);
             }
             let app = {
-                store: hasStore ? store : {},
                 props: hasProps ? props : {},
+                store: hasStore ? (isStoreStrongTyped ? setStrongTypedObject(store) : store) : {},
                 nodes: {}
             };
             let schemas = {
                 'default': ['events', 'renderers', 'actions'],
-                app: ['events', 'actions', 'common', 'modules', 'core']
+                app: ['events', 'actions', 'common', 'modules', 'core'],
+                module: ['events', 'actions', 'templates', 'views'],
+                widget: ['events', 'actions', 'widgets']
             };
             let storage;
-            const date = new Date();
 
-            const factory = function() {
-                const augment = function(nodeFamily) {
+            const factory = function () {
+                const augment = function (nodeFamily) {
                     let nodes = app.nodes;
                     const families = !isArr(nodeFamily) ? [nodeFamily] : nodeFamily;
                     families.map(family => {
-                        if ( ! hasProp(nodes, family) ) {
+                        if (!hasProp(nodes, family)) {
                             nodes[family] = {};
                         }
                     });
                     return this;
                 };
 
-                const addSchema = function(schemaName, schema) {
-                    if ( ! hasProp(schemas, schemaName) && isArr(schema) ) {
+                const addSchema = function (schemaName, schema) {
+                    if (!hasProp(schemas, schemaName) && isArr(schema)) {
                         schemas[schemaName] = schema;
                     }
                     return this;
                 };
 
-                const schema = function(schema) {
-                    if ( hasProp(schemas, schema) ) {
+                const schema = function (schema) {
+                    if (hasProp(schemas, schema)) {
                         augment(schemas[schema]);
                     }
                     return this;
                 };
 
-                const addNode = function(nodeFamily, nodeName, func) {
+                const addNode = function (nodeFamily, nodeName, func) {
                     let nodes = app.nodes;
-                    if ( hasProp(nodes, nodeFamily) && ! hasProp(nodes[nodeFamily], nodeName) && isFunc(func) ) {
+                    if (hasProp(nodes, nodeFamily) && !hasProp(nodes[nodeFamily], nodeName) && isFunc(func)) {
                         nodes[nodeFamily][nodeName] = func;
                     }
                     return this;
                 };
 
-                const getNode = function(nodeFamily, nodeName) {
+                const getNode = function (nodeFamily, nodeName) {
                     let nodes = app.nodes;
-                    if ( hasProp(nodes, nodeFamily) && hasProp(nodes[nodeFamily], nodeName) && isFunc(nodes[nodeFamily][nodeName]) ) {
+                    if (hasProp(nodes, nodeFamily) && hasProp(nodes[nodeFamily], nodeName) && isFunc(nodes[nodeFamily][nodeName])) {
                         return nodes[nodeFamily][nodeName];
                     } else {
                         return false;
                     }
                 };
 
-                const callNode = function(nodeFamily, nodeName, params) {
-                    const nodeParams = ! isUndef(params) ? params : {};
+                const getNodes = function (nodeFamily) {
+                    return nodeFamily && hasProp(app.nodes, nodeFamily) ? app.nodes[nodeFamily] : app.nodes;
+                };
+
+                const callNode = function (nodeFamily, nodeName, params) {
+                    const nodeParams = !isUndef(params) ? params : {};
                     let node = getNode(nodeFamily, nodeName);
-                    if ( node ) {
+                    if (node) {
                         node(nodeParams);
                     }
                     return this;
                 };
 
-                const getNodes = function(nodeFamily) {
-                    return nodeFamily && hasProp(app.nodes, nodeFamily) ? app.nodes[nodeFamily] : app.nodes;
-                };
-
-                const configure = function(nodeFamily) {
+                const configure = function (nodeFamily) {
                     const nodes = app.nodes;
-                    if ( hasProp(nodes, nodeFamily) ) {
+                    if (hasProp(nodes, nodeFamily)) {
                         return {
-                            node: function(nodeName, func) {
+                            node: function (nodeName, func) {
                                 addNode(nodeFamily, nodeName, func);
                                 return this;
                             },
@@ -837,24 +853,20 @@
                     return false;
                 };
 
-                const nodeExists = function(nodeFamily, nodeName) {
+                const nodeExists = function (nodeFamily, nodeName) {
                     return hasProp(app.nodes, nodeFamily) && isFunc(app.nodes[nodeFamily][nodeName]);
                 };
 
-                const getProps = function(name) {
+                const getProps = function (name) {
                     const props = app.props;
-                    if ( hasProp(props, name) ) {
-                        return props[name];
-                    } else {
-                        return false;
-                    }
+                    return hasProp(props, name) ? props[name] : props;
                 };
 
-                const inherit = function(app, nodeFamilies) {
+                const inherit = function (app, nodeFamilies) {
                     const nodes = app.getNodes();
 
                     eachKey(nodes, (nodeFamily, familyName) => {
-                        if ( nodeFamilies && nodeFamilies.indexOf(familyName) === -1 ) {
+                        if (nodeFamilies && nodeFamilies.indexOf(familyName) === -1) {
                             return false;
                         }
                         augment(familyName);
@@ -863,11 +875,11 @@
                     return this;
                 };
 
-                const overwrite = function(nodeFamily) {
+                const overwrite = function (nodeFamily) {
                     const nodes = app.nodes;
-                    if ( hasProp(nodes, nodeFamily) ) {
+                    if (hasProp(nodes, nodeFamily)) {
                         return {
-                            node: function(nodeName, func) {
+                            node: function (nodeName, func) {
                                 nodes[nodeFamily][nodeName] = func;
                                 return this;
                             },
@@ -877,50 +889,62 @@
                     return false;
                 };
 
-                const getStore = function(storeKey) {
+                const getStore = function (storeKey) {
                     const store = app.store;
                     return hasProp(store, storeKey) ? store[storeKey] : store;
                 };
 
-                const getStoreData = function(storeKey) {
+                const updateStore = function (storeKey, handler) {
                     const store = app.store;
-                    return hasProp(store, storeKey) && ! isUndef(store[storeKey].lastValue) ? store[storeKey].lastValue : undefined;
-                };
 
-                const updateStore = function(storeKey, handler) {
-                    const store = app.store;
-                    if ( ! hasProp(store, storeKey) ) {
+                    if (!hasProp(store, storeKey)) {
                         return false;
                     }
-                    const dataItem = {
-                        value: store[storeKey].lastValue ? handler(store[storeKey].lastValue) : handler(store[storeKey]),
-                        modified: date.getTime()
-                    };
+                    if (!isFunc(handler)) {
+                        throw new Error(`[Ammo.app] Invalid update handler. Make sure to pass as a second argument a pure function.`);
+                    }
 
-                    store[storeKey] = {
-                        values: isArr(store[storeKey].values) ? [...store[storeKey].values, ...[dataItem]] : [dataItem],
-                        lastValue: dataItem.value,
-                        modified: dataItem.modified
-                    };
-                    if ( storage ) {
-                        storage.setItem(storeKey, dataItem.value);
+                    const modifiedStoreData = handler(store[storeKey]);
+                    store[storeKey] = modifiedStoreData;
+
+                    if (storage && storage.getData()) {
+                        storage.setItem(storeKey, modifiedStoreData);
                     }
                 };
 
-                const syncStorage = function() {
-                    if ( isUndef(app.props.name) ) {
-                        throw new Error(`[ammo.app] Invalid synchronization with localStorage. Synchronized apps require a name. Pass a name as part of the app's props.`);
+                const syncWithPersistentStore = function () {
+                    if (isUndef(app.props.storeKey)) {
+                        throw new Error(`[Ammo.app] Invalid synchronization with persistent storage. Synchronized apps require a store key. Pass a store key as part of the app's props.`);
                     }
-                    storage = ammo.store(app.props.name);
-                    storage.setData(app.store);
+                    storage = base.ammo.store(app.props.storeKey);
+
+                    if (!storage.getData()) {
+                        storage.setData(app.store);
+                    } else {
+                        const dataKeys = getKeys(storage.getData());
+                        if (dataKeys.length > 0) {
+                            eachKey(storage.getData(), (data, storeKey) => updateStore(storeKey, () => data));
+                        }
+                    }
                     return this;
                 };
 
-                const getStorage = function(storeKey) {
-                    return isStr(storeKey) ? storage.getItem(storeKey) : storage.getData();
+                const clearPersistentStore = function () {
+                    if (!storage) {
+                        return false;
+                    }
+                    storage.removeData();
                 };
 
-                const createInstance = function() {
+                const getPersistentStore = function (storeKey) {
+                    if (!storage) {
+                        return false;
+                    }
+                    const data = storage.getData();
+                    return isStr(storeKey) && data ? storage.getItem(storeKey) : data;
+                };
+
+                const createInstance = function () {
                     return {
                         schema,
                         addSchema,
@@ -935,10 +959,10 @@
                         inherit,
                         overwrite,
                         getStore,
-                        getStoreData,
                         updateStore,
-                        syncStorage,
-                        getStorage
+                        syncWithPersistentStore,
+                        clearPersistentStore,
+                        getPersistentStore
                     };
                 };
 
@@ -947,13 +971,13 @@
 
             const setGlobal = instance => base[app.props.name] = base[app.props.name] || instance;
 
-            if ( isGlobal ) {
-                return setGlobal(factory());
+            if (isGlobal) {
+                setGlobal(factory());
+                return base[app.props.name];
             } else {
                 return factory();
             }
         };
-
 
         /**
          * @description Set style property for given node
@@ -963,45 +987,40 @@
          * @param value
          */
         const style = (selection, prop, value, index) => {
-            const currStyle = selection.style.getPropertyValue(prop);
-            selection.style.setProperty(prop, isFunc(value) ? (value(selection, currStyle, index) || selection.style.getProperty(prop, currStyle)) : value, '');
+            selection.style.setProperty(prop, isFunc(value) ? value(selection, index) || selection.style.getProperty(prop) : value, '');
         };
-
 
         /**
          * @description Set attribute property for given node
-         * @param {object} selection
-         * @param {string} prop
-         * @param {string/function} value
-         * @param {number} index
+         * @param selection
+         * @param prop
+         * @param value
+         * @param index
          */
         const attr = (selection, prop, value, index) => {
             const currValue = selection.getAttribute(prop);
-            selection.setAttribute(prop, isFunc(value) ? (value(selection, currValue, index) || currValue) : value);
+            selection.setAttribute(prop, isFunc(value) ? value(selection, currValue, index) || currValue : value);
         };
-
 
         /**
          * @description Set innerHTML for given node
-         * @param {object} selection
-         * @param {(string|function)} value
-         * @param {number=} index
+         * @param selection
+         * @param value
+         * @param index
          */
         const elText = (selection, value, index) => {
-            const currText = selection.innerHTML;
-            selection.innerHTML = isFunc(value) ? value(currText, index) || currText : value;
+            selection.innerHTML = isFunc(value) ? value(selection.innerHTML, index) || selection.innerHTML : value;
         };
 
-
         /**
-         * @description Filter nodes based on signature (static - value is a string, dynamic - value is a function)
-         * @param {object} selection
-         * @param {(string|function)} value
-         * @param {string} selector
-         * @param {number=} index
+         * @description Filter nodes
+         * @param selection
+         * @param value
+         * @param selector
+         * @param index
          * @returns {*}
          */
-        const filterNode = (selection, value, selector, index) => {
+        const filterNodes = (selection, value, selector, index) => {
             if ( isFunc(value) ) {
                 return value(selection, index);
             }
@@ -1021,15 +1040,14 @@
             }
         };
 
-
         /**
          * @description DOM manipulation API for single node
-         * @param {(string|object)} selector
-         * @param {object=} context
+         * @param selector
+         * @param context
          * @returns {object}
          */
         const select = function(selector, context) {
-            let selection = isStr(selector) ? contx(context).querySelector(selector) : selector;
+            let selection = isStr(selector) ? getEl(selector, context) : selector;
             return {
                 find(findSelector) {
                     selection = getEl(findSelector, selection);
@@ -1056,24 +1074,24 @@
                     return this;
                 },
                 get: () => selection
-            }
+            };
         };
-
 
         /**
          * @description DOM manipulation API for node lists
-         * @param {string} selector
-         * @param {object=} context
+         * @param selector
+         * @param context
          * @returns {object}
          */
         const selectAll = function(selector, context) {
-            let selection = getEls(selector, context);
+            let selection = isStr(selector) ? getEls(selector, context) : selector;
             let filtered;
+
             return {
                 filter(value) {
                     filtered = [];
-                    ammo.each(selection, (el, index) => {
-                        if ( filterNode(el, value, selector, index) ) {
+                    each(selection, (el, index) => {
+                        if ( filterNodes(el, value, selector, index) ) {
                             filtered.push(el);
                         }
                     });
@@ -1089,27 +1107,28 @@
                     return this;
                 },
                 text(value) {
-                    ammo.each(filtered || selection, (el, index) => elText(el, value, index));
+                    each(filtered || selection, (el, index) => elText(el, value, index));
                     return this;
                 },
                 style(prop, value) {
-                    ammo.each(filtered || selection, (el, index) => style(el, prop, value, index));
+                    each(filtered || selection, (el, index) => style(el, prop, value, index));
                     return this;
                 },
                 attr(prop, value) {
-                    ammo.each(filtered || selection, (el, index) => attr(el, prop, value, index));
+                    each(filtered || selection, (el, index) => attr(el, prop, value, index));
                     return this;
                 },
                 data(data) {
-                    ammo.each(filtered || selection, (el, index) => el.innerHTML = data[index]);
+                    each(filtered || selection, (el, index) => el.innerHTML = data[index]);
                     return this;
                 },
                 on(event, callback) {
-                    ammo.each(filtered || selection, (el, index) => el.addEventListener(event, callback));
+                    each(filtered || selection, (el) => el.addEventListener(event, callback));
                     return this;
                 },
                 each(handler) {
-                    ammo.each(filtered || selection, handler);
+                    each(filtered || selection, handler);
+                    return this;
                 },
                 eq(index) {
                     const nodes = filtered || selection;
@@ -1117,81 +1136,30 @@
                 },
                 index(indexSelector) {
                     let matchIndex = -1;
-                    this.each((el, index) => {
-                        if ( el.isSameNode(indexSelector) && matchIndex === -1 ) {
+                    each(filtered || selection, (el, index) => {
+                        if ( el.classList.contains(indexSelector) && matchIndex === -1 ) {
                             matchIndex = index;
                         }
                     });
                     return matchIndex;
                 },
                 async(handler, complete) {
-                    const sequencer = ammo.sequence();
-                    const nodes = filtered || selection;
+                    const sequencer = sequence();
 
-                    ammo.each(nodes, (el, index) => {
-                        sequencer.chain(seq => handler(seq.resolve, el, index, nodes.length));
+                    each(filtered || selection, (el, index) => {
+                        sequencer.chain(seq => handler(seq.resolve, el, index));
                     });
 
                     if ( isFunc(complete) ) {
-                        sequencer.chain(seq => complete());
+                        sequencer.chain(() => complete());
                     }
 
                     sequencer.execute();
                     return this;
                 },
                 get: () => filtered || selection
-            }
-        };
-
-
-        /**
-         * @description Scroll spy API, exposing callbacks for 'scroll' events
-         * @param {object} options
-         */
-        const scrollSpy = (options) => {
-            const isValid = isObj(options) && (isNum(options.offset) || isFunc(options.offset)) && isObj(options.callbacks) && isFunc(options.callbacks.onBefore) && isFunc(options.callbacks.onAfter);
-
-            if ( ! isValid ) {
-                throw new Error('[Ammo.scrollSpy] Invalid initialization. Make sure to provide an options object, containing offset{number} and callbacks{object}, containing onBefore{function} and onAfter{function}.');
-            }
-
-            const offset = options.offset;
-            const callbacks = options.callbacks;
-            const initOnLoad = isBool(options.initOnLoad) ? options.initOnLoad : false;
-            let docElem = document.documentElement;
-            let didScroll = false;
-
-            const scrollY = () => window.pageYOffset || docElem.scrollTop;
-
-            const scrollPage = () => {
-                const sy = scrollY();
-                const targetOffset = isFunc(offset) ? offset() : offset;
-
-                if ( sy < targetOffset ) {
-                    callbacks.onBefore(sy, targetOffset);
-                } else {
-                    callbacks.onAfter(sy, targetOffset);
-                }
-
-                didScroll = false;
             };
-
-            const init = function() {
-                window.addEventListener('scroll', () => {
-                    if ( !didScroll ) {
-                        setTimeout( scrollPage, 50 );
-                        didScroll = true;
-                    }
-                }, false);
-            };
-
-            if ( initOnLoad ) {
-                scrollPage();
-            }
-
-            init();
         };
-
 
         /**
          * Public API
@@ -1200,6 +1168,7 @@
             onDomReady,
             onHover,
             delegateEvent,
+            jsonCopy,
             getEl,
             getEls,
             isHovered,
@@ -1228,14 +1197,16 @@
             poll,
             buffer,
             extend,
+            runMethods,
+            parseToType,
             template,
-            req,
+            request,
             store,
             sequence,
             app,
             select,
             selectAll,
-            scrollSpy
+            setStrongTypedObject
         };
     })();
 })(window);
